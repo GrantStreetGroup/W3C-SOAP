@@ -74,10 +74,12 @@ sub main {
         $option{ns_module_map} ||= {};
         my $file = path($option{ns_module_map_file});
 
-        for my $line ($file->slurp) {
-            chomp $line;
+        for my $line ($file->lines({ chomp => 1})) {
             next if !$line || $line =~ /^#/;
             my ($ns, $mod) = split /=|,|\t/, $line, 2;
+            $ns =~ s/^\s+|\s+$//g;  # trim leading / trailing spaces
+            $mod =~ s/^\s+|\s+$//g; # trim leading / trailing spaces
+            next unless (length($ns) && length($mod));
             $option{ns_module_map}{$ns} ||= $mod
         }
     }
